@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>水母报告 - 企业分析报告</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif; background: #e8e8e8; }
+.page-container { max-width: 480px; margin: 0 auto; background: #f5f6f8; min-height: 100vh; position: relative; }
+
+/* 顶部导航 */
+.custom-nav { width: 100%; background: #ffffff; }
+.nav-status-bar { width: 100%; height: 22px; }
+.nav-title-bar { width: 100%; height: 44px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.nav-title { font-size: 17px; font-weight: bold; color: #333333; line-height: 1.2; }
+.nav-subtitle { font-size: 11px; color: #999999; line-height: 1.2; margin-top: 1px; }
+
+/* 头部蓝色背景 */
+.header { position: relative; width: 100%; height: 140px; overflow: hidden; }
+.header-bg { width: 100%; height: 100%; display: block; object-fit: cover; }
+.header-title { position: absolute; top: 40px; left: 24px; color: #ffffff; font-size: 22px; font-weight: bold; }
+.header-share { position: absolute; top: 44px; right: 16px; padding: 7px 20px; border: 1.5px solid #ffffff; border-radius: 22px; color: #ffffff; font-size: 14px; cursor: pointer; white-space: nowrap; letter-spacing: 1px; z-index: 3; }
+
+/* 公司卡片 */
+.company-card { margin: -25px 8px 0; padding: 20px 10px; background: #ffffff; border-radius: 12px; text-align: center; position: relative; z-index: 2; cursor: pointer; }
+.company-name { font-size: 19px; font-weight: bold; color: #333333; }
+
+/* Tab 栏 */
+.tab-bar { position: relative; display: flex; background: #ffffff; margin-top: 12px; padding: 0 5px; }
+.tab-item { flex: 1; text-align: center; padding: 14px 0; font-size: 16px; color: #999999; cursor: pointer; transition: color 0.2s; }
+.tab-item.active { color: #333333; font-weight: bold; }
+.tab-underline { position: absolute; bottom: 0; left: 0; width: 25%; height: 2px; background: #e74c3c; transition: transform 0.2s ease; }
+
+/* 内容区 */
+.tab-content { padding: 10px 12px 30px; }
+.tab-panel { background: #ffffff; border-radius: 8px; padding: 5px 15px 15px; display: none; }
+.tab-panel.active { display: block; }
+
+/* 基本信息 */
+.base-info { width: 92%; margin: 15px auto 0; }
+.info-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid #f0f0f0; }
+.info-item:last-child { border-bottom: none; }
+.info-label { font-size: 14px; color: #999999; flex-shrink: 0; margin-right: 10px; }
+.info-value { font-size: 14px; color: #333333; text-align: right; flex: 1; word-break: break-all; }
+.copy-btn { color: #2b7cff; font-size: 13px; margin-left: 6px; cursor: pointer; }
+.question-icon { display: inline-block; width: 14px; height: 14px; line-height: 14px; text-align: center; border-radius: 50%; background: #2b7cff; color: #ffffff; font-size: 10px; margin-left: 4px; vertical-align: middle; }
+
+/* 经营分 */
+.score-wrap { width: 92%; margin: 15px auto 0; }
+.score-bar { position: relative; width: 100%; height: 12px; border-radius: 6px; background: linear-gradient(to right, #4aa8ff 0%, #36c9a5 50%, #58d68d 100%); }
+.scale-line { position: absolute; top: 0; width: 1px; height: 100%; background: #ffffff; }
+.score-pointer { position: absolute; top: -7px; transform: translateX(-50%); width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #333333; }
+.scale-nums { position: relative; width: 100%; height: 20px; margin-top: 4px; }
+.num { position: absolute; transform: translateX(-50%); font-size: 12px; color: #999999; }
+.scale-desc { display: flex; justify-content: space-between; padding: 0 10%; margin-top: 2px; }
+.desc { font-size: 12px; color: #666666; width: 33.33%; text-align: center; }
+
+/* 模块 */
+.module-block { width: 92%; margin: 15px auto 0; }
+.module-title { font-size: 16px; color: #333333; font-weight: 500; margin-bottom: 10px; }
+.info-table { width: 100%; }
+.table-row { display: flex; align-items: center; min-height: 40px; }
+.table-cell { flex: 1; text-align: center; font-size: 14px; color: #333333; padding: 5px 0; word-break: break-all; }
+.table-header { background-color: #f5f9ff; }
+.table-header .table-cell { color: #888888; font-weight: 500; }
+.dash-line { border-bottom: 1px dashed #bbbbbb; margin: 10px 0; }
+.tip-box { border: 1px solid #409eff; border-radius: 6px; padding: 10px 12px; font-size: 13px; color: #333333; background-color: #ffffff; }
+.auth-text { width: 92%; margin: 15px auto 20px; font-size: 15px; color: #333333; font-weight: 500; }
+.row-blue { background-color: #f0f7ff; }
+
+/* 纳税信息 */
+.tax-detail { display: flex; padding: 10px 0; }
+.detail-col { flex: 1; }
+.detail-item { padding: 11px 0; }
+.detail-label { color: #999999; font-size: 13px; margin-bottom: 5px; }
+.detail-value { color: #333333; font-size: 16px; font-weight: 500; }
+.text-dash-line { display: flex; align-items: center; margin: 15px 0; }
+.dash-left, .dash-right { flex: 1; border-bottom: 1px dashed #cccccc; }
+.dash-text { padding: 0 10px; color: #999999; font-size: 13px; white-space: nowrap; }
+
+/* 财报 */
+.finance-report { margin-bottom: 10px; }
+.report-title { font-size: 16px; font-weight: bold; color: #333333; margin-bottom: 10px; }
+.report-content { display: flex; }
+.report-col { flex: 1; }
+.report-item { padding: 10px 0; }
+.report-label { color: #999999; font-size: 13px; margin-bottom: 4px; }
+.report-value { color: #333333; font-size: 16px; font-weight: 500; }
+.report-dash { border-bottom: 1px dashed #dddddd; margin-top: 10px; }
+
+/* 滞纳金 */
+.latefee-label { font-size: 14px; color: #333333; font-weight: 500; margin-bottom: 5px; }
+
+/* 纳税表格 */
+.tax-table-wrap { margin-top: 10px; }
+.tax-table-wrap .table-title { font-size: 15px; font-weight: bold; color: #333333; margin-bottom: 8px; text-align: center; }
+.tax-table-wrap .table-row { border-bottom: 1px solid #f0f0f0; }
+.tax-table-wrap .table-header { background: #f0f7ff; }
+.tax-table-wrap .row-bg { background: #f8fafc; }
+.tax-table-wrap .table-summary { background: #4a90d9; }
+.tax-table-wrap .table-summary .table-cell { color: #ffffff; font-weight: bold; }
+
+/* 发票信息 */
+.invoice-info-wrap { padding: 5px 0; }
+.two-col-row { display: flex; padding: 12px 0; }
+.col-item { flex: 1; }
+.col-item .label { color: #999999; font-size: 13px; margin-bottom: 5px; }
+.col-item .value { color: #333333; font-size: 16px; font-weight: 500; }
+.block-title { font-size: 15px; font-weight: bold; color: #333333; margin: 10px 0 5px; }
+.invoice-table-wrap { margin-top: 10px; }
+.invoice-table-wrap .table-row { border-bottom: 1px solid #f0f0f0; }
+.invoice-table-wrap .table-header { background: #f0f7ff; }
+.invoice-table-wrap .row-bg { background: #f8fafc; }
+.invoice-table-wrap .table-summary { background: #4a90d9; }
+.invoice-table-wrap .table-summary .table-cell { color: #ffffff; font-weight: bold; }
+
+/* 供应商信息 */
+.supplier-table-wrap { margin-top: 15px; }
+.supplier-table-wrap .table-title { text-align: left; font-size: 16px; padding-left: 5px; }
+.supplier-table-wrap .table-row { border-bottom: 1px solid #f0f0f0; }
+.supplier-table-wrap .table-header { background: #f8fafc; }
+.supplier-table-wrap .table-header .table-cell { color: #999999; font-size: 12px; }
+.supplier-table-wrap .row-bg { background: #f8fafc; }
+.supplier-table-wrap .table-cell { font-size: 13px; padding: 11px 3px; }
+.orange-text { color: #f39c12; font-weight: 500; }
+
+/* 底部二维码 */
+.footer-qrcode { width: 100%; padding: 10px 0 20px; background: #f5f6f8; }
+.footer-qrcode-img { width: 100%; display: block; }
+
+/* 提示 toast */
+.toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); color: #fff; padding: 10px 20px; border-radius: 6px; font-size: 14px; z-index: 9999; display: none; }
+</style>
+</head>
+<body>
+<div class="page-container">
+  <!-- 顶部导航 -->
+  <div class="custom-nav">
+    <div class="nav-status-bar"></div>
+    <div class="nav-title-bar">
+      <div class="nav-title">水母报告</div>
+      <div class="nav-subtitle">shuimui.szsmjr.com</div>
+    </div>
+  </div>
+
+  <!-- 头部 -->
+  <div class="header">
+    <img class="header-bg" src="images/dhl.png" alt="header">
+    <div class="header-title">企业分析报告</div>
+    <div class="header-share" onclick="copyLink()">转发报告</div>
+  </div>
+
+  <!-- 公司卡片 -->
+  <div class="company-card" onclick="copyCompany()">
+    <span class="company-name">91370305MA3W1UK304</span>
+  </div>
+
+  <!-- Tab 栏 -->
+  <div class="tab-bar">
+    <div class="tab-item active" data-index="0" onclick="switchTab(0)">基本信息</div>
+    <div class="tab-item" data-index="1" onclick="switchTab(1)">纳税信息</div>
+    <div class="tab-item" data-index="2" onclick="switchTab(2)">发票信息</div>
+    <div class="tab-item" data-index="3" onclick="switchTab(3)">供应商信息</div>
+    <div class="tab-underline" id="tabUnderline" style="transform: translateX(0%);"></div>
+  </div>
+
+  <!-- 内容区 -->
+  <div class="tab-content">
+    <!-- 面板1：基本信息 -->
+    <div class="tab-panel active" id="panel0">
+      <div class="base-info">
+        <div class="info-item">
+          <div class="info-label">报告创建时间</div>
+          <div class="info-value">2026-09-14</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">企业名称</div>
+          <div class="info-value">
+            淄博聚众化工有限公司
+            <span class="copy-btn" onclick="copyText('淄博聚众化工有限公司')">复制</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">当前法人姓名</div>
+          <div class="info-value">
+            于振
+            <span class="copy-btn" onclick="copyText('于振')">复制</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">法人占股比例</div>
+          <div class="info-value">100%</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">成立日期</div>
+          <div class="info-value">2021-02-09</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">统一信用代码</div>
+          <div class="info-value">
+            91370305MA3W1UK304
+            <span class="copy-btn" onclick="copyText('91370305MA3W1UK304')">复制</span>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">行业分类</div>
+          <div class="info-value">石油及制品批发</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">注册资金</div>
+          <div class="info-value">50万人民币</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">注册类型</div>
+          <div class="info-value">私营有限责任公司</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">注册区域</div>
+          <div class="info-value">山东省淄博市临淄区凤凰镇王青村村碑南20米沿街房</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">
+            水母经营分
+            <span class="question-icon">?</span>
+          </div>
+          <div class="info-value">33</div>
+        </div>
+        <div class="score-wrap">
+          <div class="score-bar">
+            <div class="scale-line" style="left: 20%"></div>
+            <div class="scale-line" style="left: 40%"></div>
+            <div class="scale-line" style="left: 60%"></div>
+            <div class="scale-line" style="left: 80%"></div>
+            <div class="score-pointer" style="left: 33%"></div>
+          </div>
+          <div class="scale-nums">
+            <div class="num" style="left: 20%">20</div>
+            <div class="num" style="left: 40%">40</div>
+            <div class="num" style="left: 60%">60</div>
+            <div class="num" style="left: 80%">80</div>
+          </div>
+          <div class="scale-desc">
+            <div class="desc">经营一般</div>
+            <div class="desc">经营良好</div>
+            <div class="desc">经营卓越</div>
+          </div>
+        </div>
+      </div>
+      <div class="module-block">
+        <div class="module-title">股东明细</div>
+        <div class="info-table">
+          <div class="table-row table-header">
+            <div class="table-cell">股东名称</div>
+            <div class="table-cell">参股比例</div>
+          </div>
+          <div class="table-row">
+            <div class="table-cell">于振</div>
+            <div class="table-cell">100.00%</div>
+          </div>
+        </div>
+        <div class="dash-line"></div>
+      </div>
+      <div class="module-block">
+        <div class="module-title">法人/股东变更</div>
+        <div class="info-table">
+          <div class="table-row table-header">
+            <div class="table-cell">变更类型</div>
+            <div class="table-cell">变更时间</div>
+            <div class="table-cell">变更前</div>
+            <div class="table-cell">变更后</div>
+          </div>
+          <div class="table-row">
+            <div class="table-cell">股东及出资信息变更</div>
+            <div class="table-cell">2026-03-09</div>
+            <div class="table-cell">孙永强</div>
+            <div class="table-cell">于振</div>
+          </div>
+          <div class="table-row row-blue">
+            <div class="table-cell">法定代表人</div>
+            <div class="table-cell">2025-05-09</div>
+            <div class="table-cell">孙永强</div>
+            <div class="table-cell">于振</div>
+          </div>
+        </div>
+        <div class="dash-line"></div>
+      </div>
+      <div class="auth-text">银税互动授权记录: 无</div>
+    </div>
+
+    <!-- 面板2：纳税信息 -->
+    <div class="tab-panel" id="panel1">
+      <div class="tax-detail">
+        <div class="detail-col">
+          <div class="detail-item">
+            <div class="detail-label">纳税信用等级</div>
+            <div class="detail-value">C</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">纳税人种类</div>
+            <div class="detail-value">一般纳税人</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近12月欠税记录次数</div>
+            <div class="detail-value">0</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">当前欠税余额（元）</div>
+            <div class="detail-value">无</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近3个月滞纳金金额(元)</div>
+            <div class="detail-value">无</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近12个月滞纳金金额(元)</div>
+            <div class="detail-value">无</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近12月滞纳金次数</div>
+            <div class="detail-value">无</div>
+          </div>
+        </div>
+        <div class="detail-col">
+          <div class="detail-item">
+            <div class="detail-label">近12月增税销售额（元）</div>
+            <div class="detail-value">3820000</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近24月增税销售额（元）</div>
+            <div class="detail-value">6820000</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近12月完税总额(元)</div>
+            <div class="detail-value">6600</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近24月完税总额(元)</div>
+            <div class="detail-value">16000</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近12月增税应纳税额(元)</div>
+            <div class="detail-value">0</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近12月0申报月数(月)</div>
+            <div class="detail-value">9</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">近12月最长连续0纳税申报月数</div>
+            <div class="detail-value">9</div>
+          </div>
+        </div>
+      </div>
+      <div class="text-dash-line">
+        <div class="dash-left"></div>
+        <div class="dash-text">以上数据不含本月</div>
+        <div class="dash-right"></div>
+      </div>
+      <div class="finance-report">
+        <div class="report-title">财报信息</div>
+        <div class="report-content">
+          <div class="report-col">
+            <div class="report-item">
+              <div class="report-label">资产金额（去年年报）</div>
+              <div class="report-value">90456.8</div>
+            </div>
+            <div class="report-item">
+              <div class="report-label">营业利润额（去年年报）</div>
+              <div class="report-value">-130543.2</div>
+            </div>
+          </div>
+          <div class="report-col">
+            <div class="report-item">
+              <div class="report-label">负债率（去年年报）</div>
+              <div class="report-value">248.58%</div>
+            </div>
+            <div class="report-item">
+              <div class="report-label">营业净利率（去年年报）</div>
+              <div class="report-value">-3.41%</div>
+            </div>
+          </div>
+        </div>
+        <div class="report-dash"></div>
+      </div>
+      <div class="latefee-label">滞纳金情况: 无</div>
+      <div class="tax-table-wrap">
+        <div class="table-title">近三年纳税信息完税表(元)</div>
+        <div class="table-row table-header">
+          <div class="table-cell">月份</div>
+          <div class="table-cell">2024</div>
+          <div class="table-cell">2025</div>
+          <div class="table-cell">2026</div>
+        </div>
+        <div class="table-row"><div class="table-cell">1月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">2月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">3月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">4月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">5月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">6月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">7月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">8月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">9月</div><div class="table-cell">1300000</div><div class="table-cell">1420000</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">10月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">11月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">12月</div><div class="table-cell">1700000</div><div class="table-cell">2400000</div><div class="table-cell">0</div></div>
+        <div class="table-row table-summary">
+          <div class="table-cell">年度汇总</div>
+          <div class="table-cell">3000000</div>
+          <div class="table-cell">3800000</div>
+          <div class="table-cell">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 面板3：发票信息 -->
+    <div class="tab-panel" id="panel2">
+      <div class="invoice-info-wrap">
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近1个月开票金额(元)</div><div class="value">0</div></div>
+          <div class="col-item"><div class="label">近12个月开票金额(元)</div><div class="value">3820000</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近3个月开票金额(元)</div><div class="value">0</div></div>
+          <div class="col-item"><div class="label">近24个月开票金额(元)</div><div class="value">6820000</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近6月开票金额(元)</div><div class="value">0</div></div>
+        </div>
+        <div class="dash-line"></div>
+        <div class="block-title">开票金额环比增长率（不含本月）</div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近3月开票环比增长率</div><div class="value">0%</div></div>
+          <div class="col-item"><div class="label">近12月开票环比增长率</div><div class="value">19.6%</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近6开票环比增长率</div><div class="value">0%</div></div>
+        </div>
+        <div class="dash-line"></div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近45日是否有开票记录</div><div class="value">无</div></div>
+          <div class="col-item"><div class="label">近12月断票月数(不含2月)</div><div class="value">--</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近3个月下游客户统计</div><div class="value">--</div></div>
+          <div class="col-item"><div class="label">近12月最长连续断票月数</div><div class="value">--</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近12月下游客户数量(家)</div><div class="value">0</div></div>
+          <div class="col-item"><div class="label">近12个月红冲金额占比</div><div class="value">--%</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近12个月下游开票张数</div><div class="value">--</div></div>
+          <div class="col-item"><div class="label">近12月红冲发票张数占比</div><div class="value">--%</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近12个月作废发票数量占比</div><div class="value">--%</div></div>
+        </div>
+        <div class="two-col-row">
+          <div class="col-item"><div class="label">近12个月最大连续未开票间隔天数（销项）</div><div class="value">364</div></div>
+        </div>
+      </div>
+      <div class="text-dash-line">
+        <div class="dash-left"></div>
+        <div class="dash-text">以上数据不含本月</div>
+        <div class="dash-right"></div>
+      </div>
+      <div class="invoice-table-wrap">
+        <div class="table-title">近三年开票信息报表 (元)</div>
+        <div class="table-row table-header">
+          <div class="table-cell">月份</div><div class="table-cell">2024</div><div class="table-cell">2025</div><div class="table-cell">2026</div>
+        </div>
+        <div class="table-row"><div class="table-cell">1月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">2月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">3月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">4月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">5月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">6月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">7月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">8月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">9月</div><div class="table-cell">1300000</div><div class="table-cell">1420000</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">10月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row"><div class="table-cell">11月</div><div class="table-cell">0</div><div class="table-cell">0</div><div class="table-cell">0</div></div>
+        <div class="table-row row-bg"><div class="table-cell">12月</div><div class="table-cell">1700000</div><div class="table-cell">2400000</div><div class="table-cell">0</div></div>
+        <div class="table-row table-summary">
+          <div class="table-cell">年度汇总</div><div class="table-cell">3000000</div><div class="table-cell">3800000</div><div class="table-cell">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 面板4：供应商信息 -->
+    <div class="tab-panel" id="panel3">
+      <div class="supplier-table-wrap">
+        <div class="table-title">近一年前十供应商信息</div>
+        <div class="table-row table-header">
+          <div class="table-cell">排名</div><div class="table-cell">供应商名称</div><div class="table-cell">采购额(元)</div><div class="table-cell">金额占比(%)</div><div class="table-cell">是否关联方</div>
+        </div>
+        <div class="table-row row-bg"><div class="table-cell">1</div><div class="table-cell">山东鑫亿源石油化工有限公司</div><div class="table-cell">3820000</div><div class="table-cell orange-text">100</div><div class="table-cell">否</div></div>
+      </div>
+      <div class="supplier-table-wrap">
+        <div class="table-title">近一年前十销售客户信息</div>
+        <div class="table-row table-header">
+          <div class="table-cell">排名</div><div class="table-cell">客户名称</div><div class="table-cell">销售额(元)</div><div class="table-cell">金额占比(%)</div><div class="table-cell">是否关联方</div>
+        </div>
+        <div class="table-row row-bg"><div class="table-cell">1</div><div class="table-cell">山东乾厚石油化工有限公司</div><div class="table-cell">1420000</div><div class="table-cell orange-text">37.17</div><div class="table-cell">否</div></div>
+        <div class="table-row"><div class="table-cell">2</div><div class="table-cell">淄博辰光辉经贸有限公司</div><div class="table-cell">2400000</div><div class="table-cell orange-text">62.83</div><div class="table-cell">否</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部二维码 -->
+  <div class="footer-qrcode">
+    <img class="footer-qrcode-img" src="images/ma.jpg" alt="关注水母报告公众号">
+  </div>
+</div>
+
+<!-- Toast 提示 -->
+<div class="toast" id="toast"></div>
+
+<script>
+// Tab 切换
+function switchTab(index) {
+  var tabs = document.querySelectorAll('.tab-item');
+  for (var i = 0; i < tabs.length; i++) {
+    if (i === index) {
+      tabs[i].classList.add('active');
+    } else {
+      tabs[i].classList.remove('active');
+    }
+  }
+  var underline = document.getElementById('tabUnderline');
+  underline.style.transform = 'translateX(' + (index * 100) + '%)';
+  var panels = document.querySelectorAll('.tab-panel');
+  for (var i = 0; i < panels.length; i++) {
+    if (i === index) {
+      panels[i].classList.add('active');
+    } else {
+      panels[i].classList.remove('active');
+    }
+  }
+}
+
+// 显示提示
+function showToast(msg) {
+  var toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.style.display = 'block';
+  setTimeout(function() {
+    toast.style.display = 'none';
+  }, 1500);
+}
+
+// 复制文本
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() {
+      showToast('复制成功');
+    }).catch(function() {
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  var textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.opacity = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  try {
+    document.execCommand('copy');
+    showToast('复制成功');
+  } catch (e) {
+    showToast('复制失败');
+  }
+  document.body.removeChild(textarea);
+}
+
+// 复制公司名
+function copyCompany() {
+  copyText('91370305MA3W1UK304');
+}
+
+// 复制链接
+function copyLink() {
+  copyText('https://shuimui.szsmjr.com');
+}
+</script>
+</body>
+</html>
